@@ -7,7 +7,7 @@ class Produit:
         self.nom = nom
         self.prix_ht = prix_ht
         self.stock = stock 
-
+        Produit.nb_produits += 1
 
     def prix_ttc(self):
         return self.prix_ht * (1 + Produit.tva / 100)
@@ -23,13 +23,11 @@ class Produit:
 
     def ajouter_stock(self, quantite):
         self.stock = self.stock + quantite
-        Produit.nb_produits += quantite
-        return Produit.nb_produits
+        return self.stock
 
     def retirer_stock(self, quantite):
         self.stock = self.stock - quantite
-        Produit.nb_produits -= quantite
-        return Produit.nb_produits
+        return self.stock
 
     def valeur_stock(self):
         return self.stock * self.prix_ht
@@ -38,12 +36,15 @@ class Produit:
 p1 = Produit("KB-001", "Clavier mécanique RGB", 79.99, 15)
 p2 = Produit("MS-002", "Souris gaming 16000 DPI", 49.99, 25)
 p3 = Produit("EC-003", "Écran 27 pouces 4K", 399.99, 10)
+p4 = Produit("EC-003", "Écran 27 pouces 4K", 399.99, 10)
+p5 = Produit("EC-003", "Écran 27 pouces 4K", 399.99, 10)
+p1.afficher()
+  
+p1.ajouter_stock(5)    
 
 p1.afficher()
-p2.afficher()
 
-print(f"Valeur du stock: {p1.valeur_stock()}€")  
-p1.ajouter_stock(5)    
 p1.retirer_stock(2)
-print(f"Total produits: {Produit.nb_produits}")  
+
+print("total produits:", Produit.nb_produits)
 
