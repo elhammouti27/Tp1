@@ -1,4 +1,5 @@
-#from Categorie import Categorie
+from abc import ABC, abstractmethod
+from datetime import date
 class Produit:
 
     _tva = 0.20
@@ -40,7 +41,7 @@ class Produit:
     def prix_ht(self, value):
         if value < 0 :
             raise ValueError("Invalide nombre")
-        self._prix_ht = value
+        self._prix_ht = round(value, 2)
     
     @property
     def stock(self):
@@ -78,12 +79,84 @@ class Produit:
     
 
 
-p = Produit("kb-gg1", "ADB", 79.99, 15)
-print(p.reference)  # KB-001 (converti en majuscules)
-#print(p.prix_ttc)
+    @abstractmethod
+    def calculer_frais_livraison():
+        pass
 
-print(p.nom)
-print(p.prix_ttc)
+    @abstractmethod
+    def afficher_details():
+        pass
 
-p.prix_ht = 69.99     # OK
-p.ajouter_stock(10)
+
+class ProduitElectronique(Produit):
+    def __init__(self, reference, nom, prix_ht, stock, garantie_mois, poids_kg):
+        super().__init__(reference, nom, prix_ht, stock)
+        self.garantie_mois = garantie_mois
+        self.poids_kg = poids_kg
+    
+    @property
+    def garantie_mois(self):
+        return self._garantie_mois
+    
+    @garantie_mois.setter
+    def garantie_mois(self, value):
+        if not isinstance(value, int):
+            raise ValueError("error")
+        self._garantie_mois = value
+
+
+
+    @property
+    def poids_kg(self):
+        return self._poids_kg
+    
+    @poids_kg.setter
+    def poids_kg(self, value):
+        if not isinstance(value, (int, float)):
+            raise ValueError("error")
+        self._poids_kg = value
+
+
+    def calculer_frais_livraison(self):
+        # Frais = 10€ + 2€ par kg
+        return 10 + 2 * self.poids_kg
+
+    def afficher_details(self):
+        print(f" Garantie {self.garantie_mois} mois | poids : {self._poids_kg}")
+        
+
+
+
+class ProduitAlimentaire(Produit):
+    frais_livraison = 15
+    def __init__(self, reference, nom, prix_ht, stock, date_peremption):
+        super().__init__(reference, nom, prix_ht, stock)
+        self.date_peremption = date_peremption
+
+    
+    @property
+    def date_peremption(self):
+        return self._date_peremption
+    
+    @date_peremption.setter
+    def date_peremption(self, value):
+        try:
+            self._date_peremption = date.fromisoformat(value)
+        except ValueError:
+            raise ValueError("error de date")
+
+
+
+
+    def est_perime(self):
+        return date.today() > self.date_peremption
+        
+    def afficher_details(self):
+        print(f" Date de peremption : {self.date_peremption} €")
+
+
+    def calculer_frais_livraison(self):
+        return ProduitAlimentaire.frais_livraison
+    
+
+
